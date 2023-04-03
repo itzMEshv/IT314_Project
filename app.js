@@ -5,7 +5,6 @@ const mongoose = require("mongoose")
 const expressSession = require("express-session")
 const path = require("path")
 const User = require("./models/user");
-const user = require("./models/user");
 const user_name= 'saipatel11102';
 const password= 'bzPkbThz4UbHrfYt';
 const url = `mongodb+srv://saipatel11102:${password}@cluster0.kqrufux.mongodb.net/?retryWrites=true&w=majority`
@@ -52,6 +51,40 @@ app.get("/",async(req,res)=>{
 
 app.get("/register/student",(req,res)=>{
     res.render("register/studentRegister")
+})
+
+// instructor login
+app.post("/login/instructor",async(req,res)=>{
+    const user = await User.findOne({email:req.body.email,role:"instructor"});
+    if(!user){
+        res.redirect("/login/instructor");
+    }
+    else{
+        res.redirect("/dashboard/instructor");
+    }
+})
+app.get("/login/instructor",(req,res)=>{
+    res.render("login/instructorLogin");
+})
+
+// register new instructor
+app.get("/register/instructor",(req,res)=>{
+    res.render("register/instructorRegister");
+})
+app.post("/register/instructor",async(req,res)=>{
+    const user = await User.findOne({email:req.body.email})
+    if (user){
+        res.redirect("/register/instructor");
+    }
+    else{
+        const newUser=await User.create(req.body);
+        res.redirect("/login/instructor")
+    }
+})
+
+// instructor dashboard
+app.get("/dashboard/instructor",(req,res)=>{
+    res.send("This is instructor dashboard")
 })
 
 app.listen(3000,()=>{
